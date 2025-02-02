@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.2.0-alpha1" use-changelog="false" max-obj-count="4"
+	 last-position="0,0" last-zoom="1"
+	 default-schema="public" default-owner="dev"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<role name="dev"
+ superuser="true"
+ createdb="true"
+ replication="true"
+ createrole="true"
+ inherit="true"
+ login="true"
+ bypassrls="true"
+ password="********"
+ sql-disabled="true">
+</role>
+
+<database name="dev1" encoding="UTF8" lc-collate="en_US.utf8" lc-ctype="en_US.utf8" is-template="false" allow-conns="true">
+	<role name="dev"/>
+	<tablespace name="pg_default"/>
+</database>
+
+<schema name="public" layers="0" rect-visible="true" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
+</schema>
+
+<table name="usuario" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="dev"/>
+	<position x="580" y="240"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="senha_hash" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="nome" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="ctime" not-null="true" default-value="current_timestamp">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="usuario_pk" type="pk-constr" table="public.usuario">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+</dbmodel>

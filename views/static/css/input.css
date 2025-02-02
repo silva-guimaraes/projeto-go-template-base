@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* não deve ser o jeito certo de fazer isso. */
+
+.primary_button {
+  @apply rounded p-2 bg-indigo-500;
+}
+
+.my-input {
+	@apply w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow;
+}
+
+.my-label {
+	@apply block mb-1 text-sm text-slate-600;
+}
+
+.however {
+	@apply flex items-center mt-2 text-xs text-slate-400;
+}
+
+.my-my-input {
+	@apply w-full min-w-[200px] mb-5;
+}
+
+.btn {
+	@apply w-full rounded-md bg-slate-800 py-2 px-4 my-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none;
+}
+
+p, a {
+	@apply block mb-1 text-sm text-slate-600
+}
+
+a {
+	@apply underline text-blue-500 transition hover:text-blue-800
+}
