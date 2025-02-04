@@ -7,6 +7,7 @@
 
 ## Quickstart
 ### Usando Docker
+Favor primeiro verificar caso haja alguma outra instância do Postgres rodando na mesma porta (5432).
 ```sh
 docker compose up
 ```
