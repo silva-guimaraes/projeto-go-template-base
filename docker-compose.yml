@@ -1,10 +1,9 @@
 services:
 
   db:
+    # Nosso garotão. Dá de 10 a 0 em cima do MySQL.
     image: postgres
     restart: always
-    # set shared memory limit when using docker-compose
-    # shm_size: 128mb
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
 
@@ -15,9 +14,27 @@ services:
     ports:
       - 5432:5432
 
+  # Interface web para monitoramento e consultas no banco.
   adminer:
     image: adminer
     restart: always
     ports:
       - 8090:8080
+    depends_on:
+      - db
 
+  # Servidor
+  app:
+    build: .
+    environment:
+      # Não tive sorte em conectar com o banco usando "localhost", "127.0.0.1", ou "0.0.0.0" porque
+      # o modo em que o docker compose trata endereçamento de rede é diferente do modelo padrão.
+      # O docker compose registra cada serviço como um endereço de rede, e é isso
+      # com que o contêiner usa para conectar-se com o banco.
+      # Não existe motivo para definir isso no .env já que um servidor rodando fora de um contêiner
+      # não apresenta esse problema e não possui essa mesma facilidade.
+      PG_ADDR: db
+    depends_on:
+      - db
+    ports:
+      - 8888:8888

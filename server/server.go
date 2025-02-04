@@ -10,10 +10,15 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv" // Carrega .env
 )
 
-var Port = "8080"
-var s *http.Server = nil
+var (
+	Port              = "8888"
+	Addr              = "localhost"
+	s    *http.Server = nil
+)
 
 func MustStartServer() {
 	if s != nil {
@@ -31,15 +36,23 @@ func mustStartServer(ready chan<- bool) {
 		return
 	}
 
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
 	if port := os.Getenv("SERVER_PORT"); port != "" {
 		Port = port
+	}
+	if addr := os.Getenv("SERVER_ADDR"); addr != "" {
+		Addr = addr
 	}
 
 	_ = database.New()
 	routes := routes.Register()
 
 	s = &http.Server{
-		Addr:           ":" + Port,
+		Addr:           fmt.Sprintf("%s:%s", Addr, Port),
 		Handler:        routes,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -54,7 +67,7 @@ func mustStartServer(ready chan<- bool) {
 		panic(err)
 	}
 	ready <- true
-	fmt.Println("Estamos ao vivo! em http://localhost:8080")
+	fmt.Printf("Estamos ao vivo! teste em http://%s:%s\n", Addr, Port)
 
 	log.Fatal(s.Serve(ln))
 }

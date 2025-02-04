@@ -1,8 +1,11 @@
-.PHONY: goose build
+.PHONY: goose build run goose tw
 include .env
 
 run: goose tw
 	go run ./server
+
+build: tw
+	go build -v -o base ./server
 
 tw:
 	tailwindcss -i views/static/css/input.css -o views/static/css/output.css
