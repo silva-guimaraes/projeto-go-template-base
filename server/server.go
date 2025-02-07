@@ -14,6 +14,8 @@ import (
 	"github.com/joho/godotenv" // Carrega .env
 )
 
+//go:generate templ generate
+
 var (
 	Port              = "8888"
 	Addr              = "localhost"

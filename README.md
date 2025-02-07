@@ -1,6 +1,7 @@
 
 - PotsgreSQL
-- Biblioteca padrão para ambos templating e routing
+- Biblioteca padrão para routing e manipulações no banco
+- Templ
 - Tailwind CSS
 - Docker
 - HTMX + _Hyperscript para conteúdo dinâmico no front end sem a necessidade de javascript

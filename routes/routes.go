@@ -1,10 +1,11 @@
 package routes
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"foobar/database"
-	"html/template"
+	"foobar/views"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,9 +14,9 @@ import (
 )
 
 var (
-	viewsDir    = filepath.Join("views", "html")
-	indexLayout = filepath.Join(viewsDir, "indexLayout.html")
-	staticDir   = filepath.Join("views", "static")
+	// viewsDir    = filepath.Join("views", "html")
+	// indexLayout = filepath.Join(viewsDir, "indexLayout.html")
+	staticDir = filepath.Join("views", "static")
 )
 
 func Register() http.Handler {
@@ -35,13 +36,8 @@ func Register() http.Handler {
 }
 
 func notFound(w http.ResponseWriter) {
-	t, err := template.ParseFiles(indexLayout, filepath.Join(viewsDir, "404.html"))
-	if err != nil {
-		logInternalError(w, err)
-		return
-	}
 	w.WriteHeader(404)
-	if err := t.Execute(w, nil); err != nil {
+	if err := views.FourOfour().Render(context.Background(), w); err != nil {
 		logInternalError(w, err)
 		return
 	}
@@ -52,12 +48,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		notFound(w)
 		return
 	}
-	t, err := template.ParseFiles(indexLayout, filepath.Join(viewsDir, "index.html"))
-	if err != nil {
-		logInternalError(w, err)
-		return
-	}
-	if err := t.Execute(w, nil); err != nil {
+	if err := views.Index().Render(context.Background(), w); err != nil {
 		logInternalError(w, err)
 		return
 	}
@@ -67,21 +58,16 @@ func logIn(w http.ResponseWriter, r *http.Request) {
 
 	_, err := currentUser(r)
 
-	userLooged := err == nil
+	userLogged := err == nil
 
-	if userLooged {
+	if userLogged {
 		http.Redirect(w, r, "/logged", http.StatusFound)
 		return
-	} else {
-		t, err := template.ParseFiles(indexLayout, filepath.Join(viewsDir, "login.html"))
-		if err != nil {
-			logInternalError(w, err)
-			return
-		}
-		if err := t.Execute(w, nil); err != nil {
-			logInternalError(w, err)
-			return
-		}
+	}
+
+	if err := views.Login().Render(context.Background(), w); err != nil {
+		logInternalError(w, err)
+		return
 	}
 }
 
@@ -142,14 +128,7 @@ func logged(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Não Autorizado."))
 		return
 	}
-
-	t, err := template.ParseFiles(indexLayout, filepath.Join(viewsDir, "logged.html"))
-	if err != nil {
-		logInternalError(w, err)
-		return
-	}
-
-	if err := t.Execute(w, usuario.Nome); err != nil {
+	if err = views.Logged(usuario).Render(context.Background(), w); err != nil {
 		logInternalError(w, err)
 		return
 	}

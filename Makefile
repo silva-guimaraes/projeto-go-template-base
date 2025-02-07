@@ -1,7 +1,7 @@
-.PHONY: goose build run goose tw
+.PHONY: goose build run goose tw templ
 include .env
 
-run: goose tw
+run: templ tw
 	go run ./server
 
 build: tw
@@ -9,6 +9,10 @@ build: tw
 
 tw:
 	tailwindcss -i views/static/css/input.css -o views/static/css/output.css
+
+templ:
+	templ generate
+
 
 db_teste: goose
 	psql -h localhost -U ${PG_USER} ${PG_DB} < database/testdata/teste.sql
