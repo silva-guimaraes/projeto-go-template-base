@@ -5,7 +5,7 @@ services:
     image: postgres
     healthcheck:
       # Serve de condicional logo após a inicialização do DBMS
-      # para o docker compose saber que o banco padrão foi criado com sucesso
+      # para o docker compose saiba que o banco padrão foi criado com sucesso
       # antes de tentar rodar o nosso aplicativo.
       test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
       interval: 10s
@@ -37,9 +37,9 @@ services:
     build: .
     environment:
       # Não tive sorte em conectar com o banco usando "localhost", "127.0.0.1", ou "0.0.0.0" porque
-      # o modo em que o docker compose trata endereçamento de rede é diferente do modelo padrão.
-      # Felizmente o docker compose registra cada serviço como um endereço de rede, então é isso
-      # que o contêiner usa para conectar-se com o banco.
+      # o modo como o docker trata endereçamento de redes é bem diferente.
+      # Felizmente o docker compose registra cada serviço como um endereço de rede então é isso
+      # que o contêiner usa para conectar com o banco.
       PG_ADDR: db
     depends_on:
       db:
