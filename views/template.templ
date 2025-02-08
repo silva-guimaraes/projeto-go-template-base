@@ -6,13 +6,12 @@ templ indexLayout() {
 	<!DOCTYPE html>
 	<html lang="pt-BR">
 		<head>
+			<title>Mude meu título!</title>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
-			<title>Mude meu título!</title>
-			<!-- <link href="/static/css/styles.css" rel="stylesheet"> -->
 			<link href="/static/css/output.css" rel="stylesheet"/>
 			<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
 			<style>
 		html,
 		body {
@@ -46,16 +45,31 @@ templ Login() {
 	}
 }
 
-templ loginTextInput(label, name, type_, placeholder string) {
+templ formLabelInput(label string) {
 	<div class="my-my-input">
 		<label class="my-label">
 			{ label }
 		</label>
-		<input form="form1" name={ name } type={ type_ } class="my-input" placeholder={ placeholder } required/>
+		{ children... }
 		<p class="however">
 			Lorem ipsum lorem ipsum
 		</p>
 	</div>
+}
+
+templ loginTextInput(label, name, type_, placeholder string) {
+	@formLabelInput(label) {
+		<input form="form1" name={ name } type={ type_ } class="my-input" placeholder={ placeholder } required/>
+	}
+}
+
+templ loginOptionSelect(label, name string) {
+	@formLabelInput(label) {
+		<select name={ name }>
+			<option value="">Selecione uma opção</option>
+			{ children... }
+		</select>
+	}
 }
 
 templ Index() {
