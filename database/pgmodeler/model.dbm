@@ -5,7 +5,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 -->
 <dbmodel pgmodeler-ver="1.2.0-alpha1" use-changelog="false" max-obj-count="4"
 	 last-position="0,0" last-zoom="1"
-	 default-schema="public" default-owner="dev"
+	 default-schema="public" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
 	 layer-name-colors="#000000"
@@ -31,12 +31,39 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layers="0" rect-visible="true" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
 </schema>
 
+<table name="goose_db_version" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="dev"/>
+	<position x="60" y="60"/>
+	<column name="id" not-null="true"
+	 identity-type="BY DEFAULT" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="version_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="is_applied" not-null="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="tstamp" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="goose_db_version_pkey" type="pk-constr" table="public.goose_db_version">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="goose_db_version_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1" sql-disabled="true">
+	<schema name="public"/>
+	<role name="dev"/>
+</sequence>
+
 <table name="usuario" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="dev"/>
-	<position x="580" y="240"/>
+	<position x="440" y="60"/>
 	<column name="id" not-null="true"
-	 identity-type="ALWAYS">
+	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="email" not-null="true">
@@ -48,12 +75,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="nome" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="ctime" not-null="true" default-value="current_timestamp">
+	<column name="ctime" not-null="true" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp" length="0"/>
 	</column>
 	<constraint name="usuario_pk" type="pk-constr" table="public.usuario">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
+
+<sequence name="usuario_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1" sql-disabled="true">
+	<schema name="public"/>
+	<role name="dev"/>
+</sequence>
 
 </dbmodel>
