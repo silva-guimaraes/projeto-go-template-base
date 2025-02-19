@@ -19,6 +19,10 @@ RUN wget https://github.com/tailwindlabs/tailwindcss/releases/download/v4.0.3/ta
         -O tailwindcss
 RUN chmod a+x tailwindcss
 
+RUN go install github.com/a-h/templ/cmd/templ@latest
+
+RUN templ generate .
+
 # make não consegue encontrar o tailwind sem que ajustemos o PATH
 RUN PATH=$PATH:/app make build
 
