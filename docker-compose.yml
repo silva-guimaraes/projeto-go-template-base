@@ -5,7 +5,7 @@ services:
     image: postgres
     healthcheck:
       # Serve de condicional logo após a inicialização do DBMS
-      # para o docker compose saiba que o banco padrão foi criado com sucesso
+      # para que o docker compose saiba que o banco padrão foi criado com sucesso
       # antes de tentar rodar o nosso aplicativo.
       test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
       interval: 10s
