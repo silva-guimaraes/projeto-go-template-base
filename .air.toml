@@ -3,11 +3,11 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "templ generate && go build -v -o ./tmp/main ./server/server.go"
+  cmd = "templ generate && tailwindcss -i views/static/css/input.css -o views/static/css/output.css && go build -v -o ./tmp/main ./server/server.go"
   delay = 500
   exclude_dir = ["assets", "tmp", "vendor", "data"]
   exclude_file = []
-  exclude_regex = [".*_templ.go"]
+  exclude_regex = [".*_templ.go", "output.css"]
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""

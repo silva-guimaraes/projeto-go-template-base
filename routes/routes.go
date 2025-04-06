@@ -29,7 +29,7 @@ func Register() http.Handler {
 
 	mux.HandleFunc("/", index)
 	mux.HandleFunc("GET /login", logIn)
-	mux.HandleFunc("POST /login", logInPOST)
+	mux.HandleFunc("POST /login", redirectHtmxFormMiddleware(logInPOST))
 	mux.HandleFunc("GET /logged", logged)
 	mux.HandleFunc("GET /logout", logout)
 	return logPanic(logging(mux))
@@ -71,18 +71,76 @@ func logIn(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func logInPOST(w http.ResponseWriter, r *http.Request) {
+type userError struct {
+	error
+	user string
+}
+
+func newUserError(err error, msg string) *userError {
+	if err == nil {
+		return nil
+	}
+	return &userError{
+		error: err,
+		user:  msg,
+	}
+}
+
+var errUser = errors.New("user error")
+
+type redirectURL string
+type redirectFormFunc func(http.ResponseWriter, *http.Request) (redirectURL, error)
+
+func (u redirectURL) Valid() bool {
+	return len(u) > 0 && u[0] == '/'
+}
+
+func redirectHtmxFormMiddleware(fun redirectFormFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		hxRequest := r.Header.Get("HX-Request") == "true"
+
+		redirectURL, err := fun(w, r)
+		if err != nil {
+			w.Header().Add("HX-Retarget", "#error-target")
+			w.Header().Add("HX-Reswap", "innerHTML")
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			if u, ok := err.(*userError); ok {
+				if hxRequest {
+					_ = views.ErrorBox(u.user).Render(context.Background(), w)
+				} else {
+					w.Write([]byte(u.user))
+
+				}
+				return
+			} else {
+				_ = views.ErrorBox("Erro interno").Render(context.Background(), w)
+				return
+			}
+		}
+
+		if !redirectURL.Valid() {
+			panic("not implemented")
+		}
+
+		if hxRequest {
+			w.Header().Add("HX-Redirect", string(redirectURL))
+		} else {
+			http.Redirect(w, r, string(redirectURL), http.StatusFound)
+		}
+	}
+}
+
+func logInPOST(w http.ResponseWriter, r *http.Request) (redirectURL, error) {
 
 	email := r.FormValue("email")
 	if email == "" {
-		formValueMissing("email", w, r)
-		return
+		return "", formValueMissing("email", w, r)
 	}
 
 	senha := r.FormValue("senha")
 	if senha == "" {
-		formValueMissing("senha", w, r)
-		return
+		return "", formValueMissing("senha", w, r)
 	}
 
 	tx := database.MustBeginTx()
@@ -91,40 +149,37 @@ func logInPOST(w http.ResponseWriter, r *http.Request) {
 	usuario, err := database.VerifyUser(tx, email, senha)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) || errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			w.WriteHeader(422)
-			w.Write([]byte(`senha ou email não conferem`))
-			return
+			return "", newUserError(err, "senha ou email não conferem")
 		} else {
-			logInternalError(w, err)
-			return
+			return "", err
 		}
 	}
 
 	session, err := store.Get(r, sessionIdCookie)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return "", err
 	}
 
 	userId, err := usuario.Id()
 	if err != nil {
-		logInternalError(w, database.ErrNotSaved)
-		return
+		return "", err
 	}
 
 	session.Values["userId"] = userId
+	session.Options.SameSite = http.SameSiteDefaultMode
 
 	if err := session.Save(r, w); err != nil {
-		logInternalError(w, err)
-		return
+		return "", err
 	}
 
-	http.Redirect(w, r, "/logged", http.StatusFound)
+	return "/logged", nil
 }
 
 func logged(w http.ResponseWriter, r *http.Request) {
 	usuario, err := currentUser(r)
 	if err != nil {
+		logError(err)
+		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Não Autorizado."))
 		return
 	}

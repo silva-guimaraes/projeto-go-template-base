@@ -26,10 +26,51 @@
 	@apply w-full rounded-md bg-slate-800 py-2 px-4 my-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none;
 }
 
+
 p, a {
-	@apply block mb-1 text-sm text-slate-600
+	@apply mb-1
 }
 
 a {
 	@apply underline text-blue-500 transition hover:text-blue-800
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateX(-7px);
+    timing-function: ease-in;
+  }
+  37% {
+    transform: translateX(7px);
+    timing-function: ease-out;
+  }
+  55% {
+    transform: translateX(-7px);
+    timing-function: ease-in;
+  }
+  73% {
+    transform: translateX(5px);
+    timing-function: ease-out;
+  }
+  82% {
+    transform: translateX(-5px);
+    timing-function: ease-in;
+  }
+  91% {
+    transform: translateX(2px);
+    timing-function: ease-out;
+  }
+  96% {
+    transform: translateX(-2px);
+    timing-function: ease-in;
+  }
+  100% {
+    transform: translateX(0px);
+    timing-function: ease-in;
+  }
+}
+
+.bounce {
+  animation-name: bounce;
+  animation-duration: .5s;
 }

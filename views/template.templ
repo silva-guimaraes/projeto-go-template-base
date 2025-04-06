@@ -9,17 +9,20 @@ templ indexLayout() {
 			<title>Mude meu título!</title>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<meta name="htmx-config" content='{ "responseHandling":[{"code":"422", "swap": true}] }' />
 			<link href="/static/css/output.css" rel="stylesheet"/>
 			<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+			<script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
 			<style>
-		html,
-		body {
-			height: 100%;
-		}
-	</style>
+			html,
+			body {
+				height: 100%;
+			}
+			</style>
 		</head>
-		<body class="flex-wrap flex content-center justify-between flex-col">
+		<body class="flex-wrap flex content-center justify-between flex-col"
+		>
 			<nav class="w-full flex flex-row-reverse absolute m-3" style="top: 0; right: 0;">
 				<a href="/login"><b>Login</b></a>
 			</nav>
@@ -31,12 +34,20 @@ templ indexLayout() {
 	</html>
 }
 
+const toggleButtonInMeUntilLoad = 
+	`on every htmx:beforeSend
+		tell <button/> in me
+			toggle [@disabled='true'] until htmx:afterOnLoad
+		end
+	end`
+
 templ Login() {
 	@indexLayout() {
 		<div class="w-[400px]">
 			@loginTextInput("E-Mail", "email", "email", "Insira seu e-mail...")
 			@loginTextInput("Senha", "senha", "password", "Insira sua senha...")
-			<form id="form1" method="POST" action="/login">
+			@errorTarget()
+			<form id="form1" hx-post="/login " hx-trigger="submit" script={toggleButtonInMeUntilLoad} >
 				<button class="btn" type="submit">
 					Entrar
 				</button>
@@ -99,4 +110,27 @@ templ Logged(usuario *database.Usuario) {
 			</p>
 		</div>
 	}
+}
+
+templ errorTarget() {
+	<div id="error-target">
+	</div>
+}
+
+templ ErrorBox(msg string) {
+	<div role="alert" class="bounce mt-3 relative flex flex-col w-full p-3 text-sm text-white bg-red-600 rounded-md">
+		<p class="flex text-base">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 mr-2 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"></path></svg>
+			Erro
+		</p>
+		<p class="ml-4 p-3">
+			{ msg }
+		</p>
+
+		<button class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute top-1.5 right-1.5" type="button"
+			_='on click remove closest <div[role="alert"]/>'
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-5 w-5" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+		</button>
+	</div>
 }

@@ -39,7 +39,7 @@ func currentUser(r *http.Request) (*database.Usuario, error) {
 
 	id, ok := session.Values["userId"].(int)
 	if !ok {
-		return nil, fmt.Errorf("não autenticado")
+		return nil, fmt.Errorf("not ok")
 	}
 
 	tx := database.MustBeginTx()
