@@ -58,7 +58,8 @@ templ Login() {
 			@loginTextInput("E-Mail", "email", "email", "Insira seu e-mail...")
 			@loginTextInput("Senha", "senha", "password", "Insira sua senha...")
 			@errorTarget()
-			<form id="form1" hx-post="/login " hx-trigger="submit" script={toggleButtonInMeUntilLoad} hx-boost="true">
+			<form id="form1"  method="POST" action="/login"
+				hx-post="/login " hx-trigger="submit" script={toggleButtonInMeUntilLoad} hx-boost="true">
 				<button class="btn" type="submit">
 					Entrar
 				</button>
