@@ -18,7 +18,7 @@ docker compose up
 Servidor estará disponível em `http://localhost:8888` por padrão.
 
 
-#### Desenvolvimento
+### Desenvolvimento
 ```sh
 docker compose up db adminer -d
 air
