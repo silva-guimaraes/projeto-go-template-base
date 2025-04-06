@@ -68,14 +68,10 @@ func httpErrorf(w http.ResponseWriter, status int, formatString string, format .
 	http.Error(w, fmt.Sprintf(formatString, format...), status)
 }
 
-func formValueMissing(field string, w http.ResponseWriter, r *http.Request) error {
+func formValueMissing(field string, r *http.Request) error {
 	return fmt.Errorf(
 		"campo '%s' em formulário não pôde ser encontrado. Content-Type: %s",
 		field,
 		r.Header.Get("Content-Type"),
 	)
 }
-
-// func logFormValueMissing(field string, w http.ResponseWriter, r *http.Request) {
-// 	logInternalError(w, formatFormValueMissing(field, w, r))
-// }
