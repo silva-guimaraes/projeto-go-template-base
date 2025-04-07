@@ -1,12 +1,16 @@
-services:
 
+networks:
+  metrics:
+    driver: bridge
+  transactional:
+    driver: bridge
+
+services:
   db:
-    # Nosso garotão. Dá de 10 a 0 em cima do MySQL.
     image: postgres
     healthcheck:
-      # Serve de condicional logo após a inicialização do DBMS
-      # para que o docker compose saiba que o banco padrão foi criado com sucesso
-      # antes de tentar rodar o nosso aplicativo.
+      # Serve de condicional para que o docker compose saiba que o banco
+      # foi criado com sucesso antes de inicializar a aplicação.
       test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
       interval: 10s
       retries: 5
@@ -22,6 +26,8 @@ services:
       POSTGRES_DB: ${PG_DB}
     ports:
       - 5432:5432
+    networks:
+      - transactional
 
   # Interface web para monitoramento e consultas no banco.
   adminer:
@@ -31,20 +37,40 @@ services:
       - 8090:8080
     depends_on:
       - db
+    networks:
+      - transactional
 
-  # Servidor
+  # Observabilidade e coleta de dados
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    expose:
+      - '9090'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - metrics
+    # Necessário para que o serviço consiga encontrar a aplicação quando
+    # estivermos desenvolvendo localmente, fora de um contêiner.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Servidor. rodar apenas quando estivermos em produção.
   app:
     build: .
     environment:
-      # Não tive sorte em conectar com o banco usando "localhost", "127.0.0.1", ou "0.0.0.0" porque
-      # o modo como o docker trata endereçamento de redes é bem diferente.
-      # Felizmente o docker compose registra cada serviço como um endereço de rede então é isso
-      # que o contêiner usa para conectar com o banco.
+      # Aplicação não se conecta com o banco sem isso.
+      # Apenas funciona pois o docker compose registra o nome de cada serviço como um
+      # endereço de rede, e esse é o endereço do banco.
       PG_ADDR: db
     depends_on:
-      db:
-        # Documentado em healthcheck em db.
+      db: # Não incializa até que o banco esteja recebendo requisições
         condition: service_healthy
         restart: true
     ports:
       - 8888:8888
+    networks:
+      - metrics
+      - transactional

@@ -51,7 +51,7 @@ func mustStartServer(ready chan<- bool) {
 	}
 
 	_ = database.New()
-	routes := routes.Register()
+	routes := routes.Mux()
 
 	s = &http.Server{
 		Addr:           fmt.Sprintf("%s:%s", Addr, Port),

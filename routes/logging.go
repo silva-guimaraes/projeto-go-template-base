@@ -1,18 +1,28 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"runtime/debug"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type wrappedWriter struct {
 	http.ResponseWriter
 	statusCode int
 }
+
+var (
+	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "myapp_processed_ops_total",
+		Help: "The total number of processed events",
+	})
+)
 
 func (w *wrappedWriter) WriteHeader(statusCode int) {
 	w.ResponseWriter.WriteHeader(statusCode)
@@ -28,26 +38,33 @@ func logging(next http.Handler) http.Handler {
 			statusCode:     http.StatusOK,
 		}
 
-		next.ServeHTTP(wrapped, r)
+		err := recoverServeHTTP(next, wrapped, r)
+		if err != nil {
+			log.Println(err)
+		}
 
 		log.Printf("%v %v %v %v", wrapped.statusCode, r.Method, r.URL.Path, time.Since(start))
+		opsProcessed.Inc()
 	})
 }
 
-func logPanic(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				trace := fmt.Sprintf("Catastrophique!\n%v\n%s", err, string(debug.Stack()))
-				log.Println(trace)
-				w.WriteHeader(500)
-				if os.Getenv("PROD") == "" {
-					w.Write([]byte(trace))
-				}
+func recoverServeHTTP(next http.Handler, w http.ResponseWriter, r *http.Request) (e error) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			var err error
+			switch v := rec.(type) {
+			case error:
+				err = v
+			default:
+				err = fmt.Errorf("%v", v)
 			}
-		}()
-		next.ServeHTTP(w, r)
-	})
+			stack := debug.Stack()
+			w.WriteHeader(http.StatusInternalServerError)
+			e = errors.Join(err, fmt.Errorf(string(stack)))
+		}
+	}()
+	next.ServeHTTP(w, r)
+	return
 }
 
 func logError(err error) {

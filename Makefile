@@ -1,11 +1,16 @@
-.PHONY: goose build run goose tw templ
+.PHONY: dev build build-docker tw templ db_teste goose
+
 include .env
 
-run: templ tw
-	go run ./server
+dev:
+	sudo docker compose up db adminer prometheus -d
+	air
 
-build: tw
+build: tw templ
 	go build -v -o base ./server
+
+build-docker:
+	sudo docker compose up --force-recreate --build -d
 
 tw:
 	tailwindcss -i views/static/css/input.css -o views/static/css/output.css
@@ -14,7 +19,7 @@ templ:
 	templ generate
 
 
-db_teste: goose
+db-teste: goose
 	psql -h localhost -U ${PG_USER} ${PG_DB} < database/testdata/teste.sql
 
 goose:

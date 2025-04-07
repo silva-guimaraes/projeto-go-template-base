@@ -10,16 +10,17 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	staticDir = filepath.Join("views", "static")
+	staticDir string = filepath.Join("views", "static")
+	mux       *http.ServeMux
 )
 
-func Register() http.Handler {
-	mux := http.NewServeMux()
-
+func init() {
+	mux = http.NewServeMux()
 	if err := os.MkdirAll(staticDir, 777); err != nil {
 		panic(err)
 	}
@@ -31,7 +32,14 @@ func Register() http.Handler {
 	mux.HandleFunc("GET /logged", logged)
 	mux.HandleFunc("GET /logout", logout)
 	mux.HandleFunc("GET /sobre", sobre)
-	return logPanic(logging(mux))
+	mux.HandleFunc("/panic", func(w http.ResponseWriter, r *http.Request) {
+		panic("não implementado")
+	})
+	mux.Handle("/metrics", promhttp.Handler())
+}
+
+func Mux() http.Handler {
+	return logging(mux)
 }
 
 func notFound(w http.ResponseWriter) {

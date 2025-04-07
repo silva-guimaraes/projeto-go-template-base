@@ -2,3 +2,4 @@
 views/static/css/output.css
 *_templ.go
 tmp/*
+routes/tmp/*
