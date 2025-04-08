@@ -1,4 +1,6 @@
 
+# projeto-go-template-base
+## Stack
 - PotsgreSQL
 - Biblioteca padrão para routing e manipulações no banco
 - Templ
@@ -10,8 +12,9 @@
 Todo o projeto serve de ambos um ponta pé inicial para um projeto novo ou playground para testar novas bibliotecas e tecnologias.
 Não espero que outros usem isso.
 
-Raciocínio pela escolha dessa stack:
-- Eliminar lógica do front-end. Minimizar dependência em javascript.
+### Raciocínio pela escolha da stack
+- Eliminar lógica do front-end.
+- Minimizar dependência em javascript.
 - Minimizar etapas de compilação.
     - Atualmente temos apenas: o servidor, templates `.templ`, e classes em *tailwind*.
 - Tecnologias com histórico/promessas de estabilidade.
