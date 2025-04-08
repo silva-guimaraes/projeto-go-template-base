@@ -11,18 +11,12 @@ Todo o projeto serve de ambos um ponta pé inicial para um projeto novo ou playg
 Não espero que outros usem isso.
 
 Raciocínio pela escolha dessa stack:
-
 - Eliminar lógica do front-end. Minimizar dependência em javascript.
-
 - Minimizar etapas de compilação.
     - Atualmente temos apenas: o servidor, templates `.templ`, e classes em *tailwind*.
-
 - Tecnologias com histórico/promessas de estabilidade.
-
 - Minimizar bugs em ambiente de produção.
-
 - Desenvolvimento local.
-
 - Simplicidade.
 
 ## Quickstart
@@ -43,15 +37,9 @@ Necessita que seu sistema tenha as dependências listadas acima.
 ## TODO:
 
 - [x] Prometheus
-
 - [ ] Organizar dados para a coleta
-
 - [ ] Grafana
-
 - [ ] Deploy para uma VPS
-
 - [ ] Explorar alternativas para `database/sql`
-
 - [ ] Explorar alternativas para `testing`
-
 - [ ] CI/CD
