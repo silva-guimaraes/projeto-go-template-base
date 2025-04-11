@@ -40,7 +40,7 @@ Necessita que seu sistema tenha as dependências listadas acima.
 ## TODO:
 
 - [x] Prometheus
-- [ ] Organizar dados para a coleta
+- [x] Organizar dados para a coleta
 - [ ] Grafana
 - [ ] Deploy para uma VPS
 - [ ] Explorar alternativas para `database/sql`
