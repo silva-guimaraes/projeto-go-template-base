@@ -3,26 +3,17 @@ package routes
 import (
 	"errors"
 	"fmt"
+	"foobar/metrics"
 	"log"
 	"net/http"
 	"runtime/debug"
 	"time"
-
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type wrappedWriter struct {
 	http.ResponseWriter
 	statusCode int
 }
-
-var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "myapp_processed_ops_total",
-		Help: "The total number of processed events",
-	})
-)
 
 func (w *wrappedWriter) WriteHeader(statusCode int) {
 	w.ResponseWriter.WriteHeader(statusCode)
@@ -38,13 +29,25 @@ func logging(next http.Handler) http.Handler {
 			statusCode:     http.StatusOK,
 		}
 
+		var panicked bool
 		err := recoverServeHTTP(next, wrapped, r)
 		if err != nil {
+			wrapped.Write([]byte("500 error"))
 			log.Println(err)
+			panicked = true
 		}
 
-		log.Printf("%v %v %v %v", wrapped.statusCode, r.Method, r.URL.Path, time.Since(start))
-		opsProcessed.Inc()
+		var (
+			latency    = time.Since(start)
+			path       = r.URL.Path
+			statusCode = wrapped.statusCode
+		)
+		if path == "/metrics" && statusCode == 200 {
+			return
+		}
+		log.Printf("%v %v %v %v", wrapped.statusCode, r.Method, r.URL.Path, latency)
+
+		metrics.ResponseLatencyObserve(latency, statusCode, panicked, r)
 	})
 }
 
