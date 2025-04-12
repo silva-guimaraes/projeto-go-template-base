@@ -40,6 +40,9 @@ templ indexLayout() {
 					e.detail.shouldSwap = true;
 				}
 			});
+			document.body.addEventListener('htmx:sendError', (e) => {
+				alert('falha ao conectar com servidor!')
+			});
 			</script>
 		</body>
 	</html>
