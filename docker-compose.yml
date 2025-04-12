@@ -43,7 +43,6 @@ services:
   # Observabilidade e coleta de dados
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
     expose:
       - '9090'
     ports:
