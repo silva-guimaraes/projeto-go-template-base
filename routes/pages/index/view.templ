@@ -1,0 +1,23 @@
+package index
+
+import (
+	"foobar/views"
+
+)
+
+templ index() {
+	@views.IndexLayout() {
+		<h1 class="text-2xl font-bold mb-5">
+			Temos um servidor!
+		</h1>
+		<img class="rounded-lg" src="/static/gif/okitsura2.gif"/>
+	}
+}
+
+templ fourOfour() {
+	@views.IndexLayout() {
+		<div>404</div>
+	}
+}
+
+

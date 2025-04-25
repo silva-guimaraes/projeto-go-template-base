@@ -1,0 +1,55 @@
+package views
+
+templ IndexLayout() {
+	<!DOCTYPE html>
+	<html lang="pt-BR">
+		<head>
+			<title>Mude meu título!</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<meta name="htmx-config" content='{ "responseHandling":[{"code":"422", "swap": true}] }' />
+			<link href="/static/css/output.css" rel="stylesheet"/>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+			<script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+			<style>
+			html,
+			body {
+				height: 100%;
+			}
+			</style>
+		</head>
+		<body class="flex-wrap flex content-center justify-between flex-col" hx-boost="true" hx-push-url="true" hx-target="this">
+			<nav class="w-full flex justify-between flex-row absolute p-3" style="top: 0;">
+				<div>
+					<a href="/" class="mr-3"><b>index</b></a>
+					<a href="/sobre"><b>Sobre</b></a>
+				</div>
+				<a href="/login"><b>Login</b></a>
+			</nav>
+			<main class="m-auto">
+				{ children... }
+			</main>
+			<footer></footer>
+			<script>
+			// hx-boost não funciona sem isso.
+			// esse não deveria ser o caso.
+			document.body.addEventListener('htmx:beforeSwap', (e) => {
+				if (e?.detail?.boosted) {
+					e.detail.shouldSwap = true;
+				}
+			});
+			document.body.addEventListener('htmx:sendError', (e) => {
+				alert('falha ao conectar com servidor!')
+			});
+			</script>
+		</body>
+	</html>
+}
+
+const ToggleButtonInMeUntilLoad = 
+	`on every htmx:beforeSend
+		tell <button/> in me
+			toggle [@disabled='true'] until htmx:afterOnLoad
+		end
+	end`
+

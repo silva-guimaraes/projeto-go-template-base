@@ -6,6 +6,8 @@ COPY views views
 COPY server server
 COPY database database
 COPY routes routes
+COPY model model
+COPY metrics metrics
 
 COPY tailwind.config.js ./
 COPY go.mod go.sum  ./

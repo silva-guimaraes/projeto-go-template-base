@@ -1,8 +1,9 @@
-package routes
+package auth
 
 import (
 	"fmt"
 	"foobar/database"
+	"foobar/routes/logging"
 	"net/http"
 	"os"
 
@@ -10,9 +11,9 @@ import (
 	"github.com/joho/godotenv" // Carrega .env
 )
 
-var store *sessions.CookieStore
+var Store *sessions.CookieStore
 
-const sessionIdCookie = "session_id"
+const SessionIdCookie = "session_id"
 
 func init() {
 
@@ -27,13 +28,13 @@ func init() {
 		panic(fmt.Errorf("chave da sessão de cookies não foi definida."))
 	}
 
-	store = sessions.NewCookieStore([]byte(key))
+	Store = sessions.NewCookieStore([]byte(key))
 }
 
-func currentUser(r *http.Request) (*database.Usuario, error) {
-	session, err := store.Get(r, sessionIdCookie)
+func CurrentUser(r *http.Request) (*database.Usuario, error) {
+	session, err := Store.Get(r, SessionIdCookie)
 	if err != nil {
-		logError(err)
+		logging.Error(err)
 		return nil, err
 	}
 
@@ -54,15 +55,15 @@ func currentUser(r *http.Request) (*database.Usuario, error) {
 }
 
 func redirectUnauthorized(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, sessionIdCookie)
+	session, err := Store.Get(r, SessionIdCookie)
 	if err != nil {
-		logInternalError(w, err)
+		logging.InternalError(w, err)
 		return
 	}
 	session.AddFlash("Autenticação necessária.")
 	err = session.Save(r, w)
 	if err != nil {
-		logInternalError(w, err)
+		logging.InternalError(w, err)
 		return
 	}
 	http.Redirect(w, r, "/index.html", http.StatusFound)

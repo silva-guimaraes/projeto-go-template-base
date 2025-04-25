@@ -1,0 +1,21 @@
+package logged
+
+import (
+	"foobar/views"
+	"foobar/database"
+)
+
+
+templ logged(usuario *database.Usuario) {
+	@views.IndexLayout() {
+		<p>Logado como: { usuario.Nome }</p>
+		<div style="text-align: center;">
+			<p>
+				<a href="/">index</a>
+			</p>
+			<p>
+				<a href="/logout">logout</a>
+			</p>
+		</div>
+	}
+}

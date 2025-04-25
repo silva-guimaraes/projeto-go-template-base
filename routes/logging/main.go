@@ -1,4 +1,4 @@
-package routes
+package logging
 
 import (
 	"errors"
@@ -20,7 +20,7 @@ func (w *wrappedWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 }
 
-func logging(next http.Handler) http.Handler {
+func Logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -70,7 +70,7 @@ func recoverServeHTTP(next http.Handler, w http.ResponseWriter, r *http.Request)
 	return
 }
 
-func logError(err error) {
+func Error(err error) {
 	if err == nil {
 		log.Printf("LOG: Erro Nulo!?\n")
 	} else {
@@ -79,16 +79,12 @@ func logError(err error) {
 	log.Println(string(debug.Stack()))
 }
 
-func logInternalError(w http.ResponseWriter, err error) {
-	logError(err)
+func InternalError(w http.ResponseWriter, err error) {
+	Error(err)
 	http.Error(w, `500`, http.StatusInternalServerError)
 }
 
-func httpErrorf(w http.ResponseWriter, status int, formatString string, format ...interface{}) {
-	http.Error(w, fmt.Sprintf(formatString, format...), status)
-}
-
-func formValueMissing(field string, r *http.Request) error {
+func FormValueMissing(field string, r *http.Request) error {
 	return fmt.Errorf(
 		"campo '%s' em formulário não pôde ser encontrado. Content-Type: %s",
 		field,

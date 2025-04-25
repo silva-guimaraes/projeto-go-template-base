@@ -1,0 +1,49 @@
+package login
+
+import (
+	"foobar/views"
+)
+
+templ login() {
+	@views.IndexLayout() {
+		<div class="w-[400px]">
+			@loginTextInput("E-Mail", "email", "email", "Insira seu e-mail...")
+			@loginTextInput("Senha", "senha", "password", "Insira sua senha...")
+			@views.ErrorTarget()
+			<form id="form1"  method="POST" action="/login"
+				hx-post="/login " hx-trigger="submit" script={views.ToggleButtonInMeUntilLoad} hx-boost="true">
+				<button class="btn" type="submit">
+					Entrar
+				</button>
+			</form>
+		</div>
+	}
+}
+
+templ loginTextInput(label, name, type_, placeholder string) {
+	@formLabelInput(label) {
+		<input form="form1" name={ name } type={ type_ } class="my-input" placeholder={ placeholder } required/>
+	}
+}
+
+templ loginOptionSelect(label, name string) {
+	@formLabelInput(label) {
+		<select name={ name }>
+			<option value="">Selecione uma opção</option>
+			{ children... }
+		</select>
+	}
+}
+
+templ formLabelInput(label string) {
+	<div class="my-my-input">
+		<label class="my-label">
+			{ label }
+		</label>
+		{ children... }
+		<p class="however">
+			Lorem ipsum lorem ipsum
+		</p>
+	</div>
+}
+
