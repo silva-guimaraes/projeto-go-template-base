@@ -18,7 +18,7 @@ services:
       timeout: 10s
     restart: always
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./volumes/postgres:/var/lib/postgresql/data
 
     environment:
       POSTGRES_USER: ${PG_USER}
@@ -48,7 +48,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./volumes/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - metrics
     # Necessário para que o serviço consiga encontrar a aplicação quando
