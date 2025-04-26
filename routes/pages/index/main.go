@@ -1,13 +1,13 @@
 package index
 
 import (
-	"foobar/database"
+	"foobar/model"
 	"net/http"
 
 	"github.com/a-h/templ"
 )
 
-func Index(w http.ResponseWriter, r *http.Request, _ *database.Usuario) (templ.Component, error) {
+func Index(w http.ResponseWriter, r *http.Request, _ *model.User) (templ.Component, error) {
 	if r.URL.Path != "/index.html" && r.URL.Path != "/" || r.Method != "GET" {
 		return notFound(w)
 	}

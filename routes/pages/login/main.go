@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(w http.ResponseWriter, r *http.Request, usuario *database.Usuario) (templ.Component, error) {
+func Login(w http.ResponseWriter, r *http.Request, usuario *model.User) (templ.Component, error) {
 
 	userLogged := usuario != nil
 
@@ -39,7 +39,7 @@ func LogInPOST(w http.ResponseWriter, r *http.Request) (model.RedirectURL, error
 	tx := database.MustBeginTx()
 	defer tx.Rollback()
 
-	usuario, err := database.VerifyUser(tx, email, senha)
+	usuario, err := database.VerifyUser(tx, model.Email(email), senha)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) || errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			return "", model.NewUserError("senha ou email não conferem")

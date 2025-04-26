@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"foobar/database"
+	"foobar/model"
 	"foobar/routes/logging"
 	"net/http"
 	"os"
@@ -31,7 +32,7 @@ func init() {
 	Store = sessions.NewCookieStore([]byte(key))
 }
 
-func CurrentUser(r *http.Request) (*database.Usuario, error) {
+func CurrentUser(r *http.Request) (*model.User, error) {
 	session, err := Store.Get(r, SessionIdCookie)
 	if err != nil {
 		logging.Error(err)
@@ -51,7 +52,7 @@ func CurrentUser(r *http.Request) (*database.Usuario, error) {
 		return nil, err
 	}
 
-	return usuario, nil
+	return &usuario, nil
 }
 
 func redirectUnauthorized(w http.ResponseWriter, r *http.Request) {

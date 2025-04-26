@@ -2,68 +2,53 @@ package database
 
 import (
 	"database/sql"
+	"foobar/model"
 	"time"
 )
 
-type Usuario struct {
-	identity
-	Email string
-	Nome  string
-	// senhaHash string `json:"-"`
-	Ctime time.Time
-}
-
-func VerifyUser(tx *sql.Tx, email, senha string) (*Usuario, error) {
+func VerifyUser(tx *sql.Tx, email model.Email, senha string) (model.User, error) {
 	row := tx.QueryRow(
 		`SELECT id, nome, ctime, senha_hash FROM usuario WHERE email = $1 LIMIT 1`,
 		email,
 	)
 	if row.Err() != nil {
-		return nil, row.Err()
-	}
-	usuario := &Usuario{
-		Email: email,
+		return model.User{}, row.Err()
 	}
 
-	var id int
-	var senhaHash string
-	err := row.Scan(
-		&id,
-		&usuario.Nome,
-		&usuario.Ctime,
-		&senhaHash,
+	var (
+		id        int
+		senhaHash string
+		nome      string
+		ctime     time.Time
 	)
+	err := row.Scan(&id, &nome, &ctime, &senhaHash)
 	if err != nil {
-		return nil, err
+		return model.User{}, err
 	}
-
-	usuario.SetId(id)
 
 	if err = checkPasswordHash(senha, senhaHash); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
-	return usuario, nil
+	return model.NewUser(id, email, nome, ctime), nil
 }
 
-func FindUsuarioByID(tx *sql.Tx, id int) (*Usuario, error) {
+func FindUsuarioByID(tx *sql.Tx, id int) (model.User, error) {
 	row := tx.QueryRow(
 		`SELECT id, nome, email, ctime FROM usuario WHERE id = $1 LIMIT 1`,
 		id,
 	)
 	if row.Err() != nil {
-		return nil, row.Err()
+		return model.User{}, row.Err()
 	}
-	usuario := &Usuario{}
-	err := row.Scan(
-		&id,
-		&usuario.Nome,
-		&usuario.Email,
-		&usuario.Ctime,
+	var (
+		nome  string
+		email model.Email
+		ctime time.Time
 	)
+	err := row.Scan(&id, &nome, &email, &ctime)
 	if err != nil {
-		return nil, err
+		return model.User{}, err
 	}
-	usuario.SetId(id)
-	return usuario, nil
+	return model.NewUser(id, email, nome, ctime), nil
 }

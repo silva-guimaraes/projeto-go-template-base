@@ -3,7 +3,7 @@ package routes
 import (
 	"context"
 	"errors"
-	"foobar/database"
+	"foobar/model"
 	. "foobar/model"
 	"foobar/routes/auth"
 	"foobar/routes/logging"
@@ -15,7 +15,7 @@ import (
 
 type postRouteRedirectFunc func(http.ResponseWriter, *http.Request) (RedirectURL, error)
 
-type routeGetFunc func(http.ResponseWriter, *http.Request, *database.Usuario) (templ.Component, error)
+type routeGetFunc func(http.ResponseWriter, *http.Request, *model.User) (templ.Component, error)
 
 var (
 	errUser = errors.New("user error")
@@ -46,7 +46,7 @@ func getRouteMiddleware(fun routeGetFunc) http.HandlerFunc {
 	}
 }
 
-func redirectHtmxFormMiddleware(fun postRouteRedirectFunc) http.HandlerFunc {
+func htmxFormRedirectMiddleware(fun postRouteRedirectFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		hxRequest := r.Header.Get("HX-Request") == "true"

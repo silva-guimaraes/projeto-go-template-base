@@ -2,13 +2,13 @@ package logged
 
 import (
 	"foobar/views"
-	"foobar/database"
+	"foobar/model"
 )
 
 
-templ logged(usuario *database.Usuario) {
+templ logged(usuario *model.User) {
 	@views.IndexLayout() {
-		<p>Logado como: { usuario.Nome }</p>
+		<p>Logado como: { usuario.Name() }</p>
 		<div style="text-align: center;">
 			<p>
 				<a href="/">index</a>

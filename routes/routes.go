@@ -39,7 +39,7 @@ func init() {
 	)
 	mux.HandleFunc(
 		"POST /login",
-		redirectHtmxFormMiddleware(LogInPOST),
+		htmxFormRedirectMiddleware(LogInPOST),
 	)
 	mux.HandleFunc(
 		"GET /logged",
